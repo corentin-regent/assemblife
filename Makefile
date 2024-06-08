@@ -1,17 +1,11 @@
-all: life
+all: main
 
-life.o: life.asm
-	nasm -f elf64 life.asm
+main.o: src/*.asm
+	nasm -f elf64 -o main.o src/main.asm
 
-life: life.o
-	ld -o life life.o
+main: main.o
+	ld -o main main.o
 
 .PHONY: clean
 clean:
-	rm -f life.o life
-
-.PHONY: setup
-setup:
-	echo "deb http://deb.debian.org/debian/ bookworm main" >> /etc/apt/sources.list
-	echo "deb-src http://deb.debian.org/debian/ bookworm main" >> /etc/apt/sources.list
-	sudo apt install nasm
+	rm -f main.o main
