@@ -1,6 +1,8 @@
 Conway's Game of Life in x86-64 Assembly
 ========================================
 
+⚠️ The project is a Work In Progress.
+
 ## Overview
 
 The project targets Linux, is written using the Intel syntax,
