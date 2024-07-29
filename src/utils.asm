@@ -8,14 +8,13 @@ exitOk:
     syscall
 
 ; void exitError(char *message)
-; Prints the error message to stderr before exiting with non-zero code
+; Prints the error message to stderr before exiting with non-zero code.
 ; Arguments:
-;   rdi: Pointer to the error message
+;   rdi: The error message to print
 exitError:
     mov rsi, rdi
     mov rdi, STDERR
     call println
-
     mov rax, SYS_EXIT
     mov rdi, 1
     syscall
@@ -23,14 +22,13 @@ exitError:
 ; void println(int fd, char *message)
 ; Arguments:
 ;   rdi: File Descriptor (STDOUT or STDERR)
-;   rsi: Pointer to the message
+;   rsi: The message to print
 println:
     mov rax, SYS_WRITE
     mov rdx, 1                   ; print characters 1 by 1
-
 .printChar:
     mov cl, [rsi]                ; load current character
-    cmp cl, NULL_TERMINATOR      ; check for end of string
+    cmp cl, NULL                 ; check for end of string
     je .done
     syscall
     inc rsi                      ; move pointer to next character
@@ -42,7 +40,7 @@ println:
     ret
 
 ; unsigned long long parseU64(char *str)
-; Parses the given string as a 64-bit unsigned integer
+; Parses the given string as a 64-bit unsigned integer.
 ; Arguments:
 ;   rdi: Input string
 ; Returns:
@@ -51,10 +49,9 @@ println:
 ;   Carry Flag: The given string is not a valid 64-bit unsigned integer
 parseU64:
     xor rax, rax                 ; clear result register
-
 .parseChar:
     mov cl, [rdi]                ; load current character
-    cmp cl, NULL_TERMINATOR      ; check for end of string
+    cmp cl, NULL                 ; check for end of string
     je .done
     sub cl, '0'                  ; convert ASCII to digit
     cmp cl, 9
