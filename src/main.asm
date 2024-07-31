@@ -1,4 +1,5 @@
 %include "src/constants.asm"
+%include "src/gui.asm"
 %include "src/random.asm"
 %include "src/utils.asm"
 
@@ -14,6 +15,10 @@ next_grid_pointer    resq 1
 SECTION .rodata
 msg_invalid_usage db "Invalid usage. Expected `./main [cols] [rows]`", NULL
 
+sleep_interval:  ; 5 FPS
+    sleep_sec  dq 0
+    sleep_nsec dq 200_000_000
+
 SECTION .text
 global _start
 
@@ -22,6 +27,7 @@ _start:
     call computeGridConstants
     call allocateGrids
     call initializeGrid
+    call mainLoop
     call deallocateGrids
     jmp exitOk
 
@@ -86,8 +92,8 @@ allocateGrids:
     mov rax, SYS_MMAP
     xor rdi, rdi                         ; address will be chosen by the OS
     mov rsi, [bytes_per_grid]
-    mov rdx, PROT_READ_AND_WRITE
-    mov r10, MAP_PRIVATE_AND_ANONYMOUS
+    lea rdx, [PROT_READ | PROT_WRITE]
+    lea r10, [MAP_PRIVATE | MAP_ANONYMOUS]
     mov r8, -1                           ; no file descriptor
     xor r9, r9                           ; no offset
     syscall
@@ -125,5 +131,19 @@ deallocateGrids:
 .deallocateGrid:
     mov rax, SYS_MUNMAP
     mov rsi, [bytes_per_grid]
+    syscall
+    ret
+
+mainLoop:
+    call drawGrid
+    call sleep
+    ret
+
+; void sleep()
+; Sleeps until it is time for the next frame
+sleep:
+    mov rax, SYS_NANOSLEEP
+    mov rdi, sleep_interval
+    xor rsi, rsi                         ; don't write anything to memory if interrupted
     syscall
     ret

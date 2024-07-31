@@ -21,11 +21,22 @@ exitError:
 
 ; void println(int fd, char *message)
 ; Arguments:
-;   rdi: File Descriptor (STDOUT or STDERR)
+;   rdi: Output file descriptor
 ;   rsi: The message to print
 println:
+    call print
+    mov rsi, newline
+    call print
+    ret
+
+; void print(int fd, char *message)
+; Arguments:
+;   rdi: Output file descriptor
+;   rsi: The message to print
+print:
     mov rax, SYS_WRITE
     mov rdx, 1                   ; print characters 1 by 1
+
 .printChar:
     mov cl, [rsi]                ; load current character
     cmp cl, NULL                 ; check for end of string
@@ -35,8 +46,6 @@ println:
     jmp .printChar
 
 .done:
-    mov rsi, newline
-    syscall
     ret
 
 ; unsigned long long parseU64(char *str)

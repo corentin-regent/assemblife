@@ -12,11 +12,8 @@ calling convention is used: function arguments are passed via registers.
 The game is implemented in a toroidal array: the left and right
 edges are stitched together, as well as the top and bottom edges.
 
-The game is displayed in a 320 by 200 pixels window.
 The user can choose the number of columns and rows in the grid
 via command-line arguments.
-
-The Escape key can be pressed at any time to stop the program.
 
 ## Getting started
 
