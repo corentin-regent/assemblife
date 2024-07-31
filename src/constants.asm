@@ -13,12 +13,16 @@
 %define WINDOW_HEIGHT 200
 
 %define MAP_PRIVATE_AND_ANONYMOUS 34
-
 %define PROT_READ_AND_WRITE 3
 
 %define VIDEO_MODE 19
-
 %define INT_VIDEO_BIOS 16
+
+; Musl parameters for Linear Congruential Generator
+; https://en.wikipedia.org/wiki/Linear_congruential_generator#Parameters_in_common_use
+%define LCG_MULTIPLIER 6364136223846793005
+%define LCG_INCREMENT                    1
+
 
 SECTION .rodata
 newline db LF
