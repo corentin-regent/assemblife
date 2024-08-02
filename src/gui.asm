@@ -8,21 +8,20 @@ SECTION .text
 ; void drawGrid()
 ; Draws the current state of the grid on the GUI
 drawGrid:
-    call clearScreen
-
     push rbx
     push r12
     push r13
-    mov rbx, [current_grid_pointer]  ; position in the current grid
+
+    call clearScreen
+    mov rbx, [current_grid]          ; position in the current grid
 
     xor r12, r12                     ; row 0
 .loopOverRows:
     xor r13, r13                     ; column 0
-.loopOverColumns:
+.loopOverCols:
     cmp byte [rbx], 1
     je .alive
 
-    ; dead:
     mov rsi, dead_cell
     jmp .continueLoop
 
@@ -30,14 +29,13 @@ drawGrid:
     mov rsi, alive_cell
 
 .continueLoop:
-    ; print the cell:
     mov rdi, STDOUT
     call print
 
     inc rbx
     inc r13
     cmp r13, [cols]                  ; check for end of row
-    jne .loopOverColumns
+    jne .loopOverCols
 
     mov rdi, STDOUT
     mov rsi, newline
