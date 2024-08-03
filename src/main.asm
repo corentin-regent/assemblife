@@ -190,8 +190,11 @@ updateGameState:
     cmp rbx, [rows]                        ; check for end of the grid
     jne .loopOverRows
 
+    ; swap grids:
+    mov rdx, [current_grid]
     mov rcx, [next_grid]
     mov [current_grid], rcx
+    mov [next_grid], rdx
 
     pop r14
     pop r13
