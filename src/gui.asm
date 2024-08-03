@@ -15,7 +15,7 @@ SECTION .text
 ; void setupGui()
 setupGui:
     mov rax, [grid_size]
-    add rax, [rows]                  ; there will be `row` newline characters
+    add rax, [rows]                  ; there will be `rows` newline characters
     mov rdx, BYTES_PER_UNICODE_CHAR
     mul rdx
     mov [output_buffer_size], rax
@@ -38,9 +38,11 @@ drawGrid:
     push rbx
     push r12
     push r13
+    push r14
 
     call clearScreen
     mov rbx, [current_grid]          ; position in the current grid
+    mov r14, [output_buffer]         ; position in the buffer
 
     xor r12, r12                     ; row 0
 .loopOverRows:
@@ -49,34 +51,51 @@ drawGrid:
     cmp byte [rbx], 1
     je .alive
 
-    mov rsi, dead_cell
+    mov rdi, dead_cell
     jmp .continueLoop
 
 .alive:
-    mov rsi, alive_cell
+    mov rdi, alive_cell
 
 .continueLoop:
-    mov rdi, STDOUT
-    mov rdx, BYTES_PER_UNICODE_CHAR
-    call write
-
+    call .moveUnicodeToOutputBuffer
     inc rbx
     inc r13
     cmp r13, [cols]                  ; check for end of row
     jne .loopOverCols
 
-    mov rdi, STDOUT
-    mov rsi, newline
-    mov rdx, 1
-    call write
-
+    mov rdi, newline
+    call .moveUnicodeToOutputBuffer
     inc r12
     cmp r12, [rows]                  ; check for end of the grid
     jne .loopOverRows
 
+    mov rdi, STDOUT
+    mov rsi, [output_buffer]
+    mov rdx, [output_buffer_size]
+    call write
+
+    pop r14
     pop r13
     pop r12
     pop rbx
+    ret
+
+; void .moveUnicodeToOutputBuffer(char[] unicodeCharacter)
+; Arguments:
+;   rdi: The unicode character to insert
+.moveUnicodeToOutputBuffer:
+    xor rax, rax                     ; index in the unicode character
+
+.loopOverBytes:
+    mov rdx, [rdi]
+    mov [r14], rdx
+    inc rax
+    inc r14
+    inc rdi
+    cmp rax, BYTES_PER_UNICODE_CHAR  ; check for end of the unicode character
+    jne .loopOverBytes
+
     ret
 
 ; void clearScreen()
