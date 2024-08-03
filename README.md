@@ -23,14 +23,22 @@ docker run --rm ghcr.io/corentin-regent/assemblife:main [cols] [rows]
 
 ## Running manually
 
-You can use the provided
+Use the provided
 [Development Container](https://code.visualstudio.com/docs/devcontainers/containers)
 to get all tools installed effortlessly, in a Debian environment.
 
-Then, you can build and run the project using:
+Then, build and run the project using:
 
 ```shell
 make && ./main [cols] [rows]
+```
+
+## Tests
+
+The project includes automated tests, that are executed automatically as a part of the CI/CD process. Run them locally using:
+
+```shell
+make && ./test
 ```
 
 ## License

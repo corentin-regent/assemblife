@@ -1,4 +1,4 @@
-name: Continuous Delivery
+name: CI/CD
 
 on:
   push:
@@ -13,9 +13,25 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  test:
+    name: Run automated tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build the test executable
+        run: make test
+
+      - name: Run the tests
+        run: ./test
+
   docker:
     name: Build & Push Docker Image
     runs-on: ubuntu-latest
+    needs:
+      - test
 
     permissions:
       contents: read
