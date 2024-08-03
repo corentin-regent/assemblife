@@ -1,13 +1,12 @@
 FROM alpine as builder
 
-RUN apk add binutils nasm
+RUN apk add --no-cache binutils make nasm
 
 WORKDIR /app/
 
 COPY . .
 
-RUN nasm -f elf64 -o main.o src/main.asm
-RUN ld -o main main.o
+RUN make main
 
 FROM alpine
 
