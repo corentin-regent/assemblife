@@ -1,9 +1,36 @@
+SECTION .bss
+output_buffer      resq 1
+output_buffer_size resq 1
+
 SECTION .rodata
-ansi_clear_terminal db 0x1b, "[2J", 0x1b, "[H", NULL
-alive_cell db 0xE2, 0xAC, 0x9C, NULL  ; ⬜
-dead_cell  db 0xE2, 0xAC, 0x9B, NULL  ; ⬛
+ansi_clear_terminal db 0x1b, "[2J", 0x1b, "[H"
+ansi_clear_terminal_len equ $ - ansi_clear_terminal
+
+alive_cell db 0xE2, 0xAC, 0x9C, 0x00  ; ⬜
+dead_cell  db 0xE2, 0xAC, 0x9B, 0x00  ; ⬛
+newline    db LF,   0x00, 0x00, 0x00
 
 SECTION .text
+
+; void setupGui()
+setupGui:
+    mov rax, [grid_size]
+    add rax, [rows]                  ; there will be `row` newline characters
+    mov rdx, BYTES_PER_UNICODE_CHAR
+    mul rdx
+    mov [output_buffer_size], rax
+
+    mov rdi, rax
+    call allocate
+    mov [output_buffer], rax
+    ret
+
+; void teardownGui()
+teardownGui:
+    mov rdi, [output_buffer]
+    mov rsi, [output_buffer_size]
+    call deallocate
+    ret
 
 ; void drawGrid()
 ; Draws the current state of the grid on the GUI
@@ -30,7 +57,8 @@ drawGrid:
 
 .continueLoop:
     mov rdi, STDOUT
-    call print
+    mov rdx, BYTES_PER_UNICODE_CHAR
+    call write
 
     inc rbx
     inc r13
@@ -39,7 +67,8 @@ drawGrid:
 
     mov rdi, STDOUT
     mov rsi, newline
-    call print
+    mov rdx, 1
+    call write
 
     inc r12
     cmp r12, [rows]                  ; check for end of the grid
@@ -55,5 +84,6 @@ drawGrid:
 clearScreen:
     mov rdi, STDOUT
     mov rsi, ansi_clear_terminal
-    call print
+    mov rdx, ansi_clear_terminal_len
+    call write
     ret

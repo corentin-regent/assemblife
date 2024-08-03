@@ -10,6 +10,8 @@
 %define NULL 0
 %define LF 10
 
+%define BYTES_PER_UNICODE_CHAR 4
+
 %define WINDOW_WIDTH  320
 %define WINDOW_HEIGHT 200
 
@@ -23,6 +25,3 @@
 ; https://en.wikipedia.org/wiki/Linear_congruential_generator#Parameters_in_common_use
 %define LCG_MULTIPLIER 6364136223846793005
 %define LCG_INCREMENT                    1
-
-SECTION .rodata
-newline db LF, NULL

@@ -12,10 +12,11 @@ current_grid resq 1
 next_grid    resq 1
 
 SECTION .rodata
-msg_invalid_usage db "Invalid usage. Expected `./main [cols] [rows]`", NULL
+invalid_usage_msg db "Invalid usage. Expected `./main [cols] [rows]`", LF
+invalid_usage_msg_len equ $ - invalid_usage_msg
 
 sleep_interval:  ; 10 FPS
-    sleep_sec  dq 0
+    sleep_sec  dq           0
     sleep_nsec dq 100_000_000
 
 SECTION .text
@@ -23,12 +24,18 @@ global _start
 
 _start:
     call parseColsAndRows
-    call computeGridConstants
+    call computeGridSize
     call allocateGrids
     call initializeGrid
+    call setupGui
+
     call mainLoop
+
+    call teardownGui
     call deallocateGrids
-    jmp exitOk
+
+    xor rdi, rdi                           ; exit code 0
+    call exit
 
 ; void parseColsAndRows()
 ; Parses the command line arguments and loads the `cols` and `rows`
@@ -59,16 +66,19 @@ parseColsAndRows:
     ret
 
 errInvalidUsage:
-    mov rdi, msg_invalid_usage
-    jmp exitError
+    mov rdi, STDERR
+    mov rsi, invalid_usage_msg
+    mov rdx, invalid_usage_msg_len
+    call write
 
-; void computeGridConstants()
-; Computed constants related to the grid size
-; and updates the corresponding variables in the bss segment.
-computeGridConstants:
+    mov rdi, 1                             ; non-zero exit code
+    call exit
+
+; void computeGridSize()
+; Computes the grid size and updates the corresponding variable in the bss segment.
+computeGridSize:
     mov rax, [cols]
     mul qword [rows]
-    jc errInvalidUsage                     ; u64 overflow
     mov [grid_size], rax
     ret
 
@@ -76,25 +86,25 @@ computeGridConstants:
 ; Allocates the memory needed for the two grids
 ; and updates the corresponding pointers in the bss segment.
 allocateGrids:
-    call .allocateGrid
+    mov rdi, [grid_size]
+    call allocate
     mov [current_grid], rax
-    call .allocateGrid
+
+    mov rdi, [grid_size]
+    call allocate
     mov [next_grid], rax
     ret
 
-; void allocateGrid()
-; Allocates `grid_size` bytes of memory
-; Returns:
-;   rax: The pointer to this memory space
-.allocateGrid:
-    mov rax, SYS_MMAP
-    xor rdi, rdi                           ; address will be chosen by the OS
+; void deallocateGrids()
+; Frees the memory that was allocated for the grids
+deallocateGrids:
+    mov rdi, [current_grid]
     mov rsi, [grid_size]
-    lea rdx, [PROT_READ | PROT_WRITE]
-    lea r10, [MAP_PRIVATE | MAP_ANONYMOUS]
-    mov r8, -1                             ; no file descriptor
-    xor r9, r9                             ; no offset
-    syscall
+    call deallocate
+
+    mov rdi, [next_grid]
+    mov rsi, [grid_size]
+    call deallocate
     ret
 
 ; void initializeGrid()
@@ -114,25 +124,7 @@ initializeGrid:
 
     ret
 
-; void deallocateGrids()
-; Deallocates the memory that was allocated for the grids
-deallocateGrids:
-    mov rdi, [current_grid]
-    call .deallocateGrid
-    mov rdi, [next_grid]
-    call .deallocateGrid
-    ret
-
-; void deallocateGrid()
-; Deallocates the memory that was allocated for the given grid
-; Arguments:
-;   rdi: The pointer to the grid to deallocate
-.deallocateGrid:
-    mov rax, SYS_MUNMAP
-    mov rsi, [grid_size]
-    syscall
-    ret
-
+; void mainLoop()
 mainLoop:
     call drawGrid
     call sleep

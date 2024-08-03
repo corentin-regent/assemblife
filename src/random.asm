@@ -1,5 +1,5 @@
 SECTION .bss
-lcg_current_value              resq 1
+lcg_current_value resq 1
 
 SECTION .text
 
