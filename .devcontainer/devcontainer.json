@@ -1,9 +1,7 @@
 {
   "name": "corentin_regent/assemblife",
-  "build": {
-    "dockerfile": "./Dockerfile",
-    "context": "."
-  },
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+  "postCreateCommand": "sudo apt update && sudo apt install -y nasm gdb",
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker": {}
   },
