@@ -3,6 +3,8 @@ Conway's Game of Life in x86-64 Assembly
 
 [![CI/CD](https://github.com/corentin-regent/assemblife/actions/workflows/cicd.yml/badge.svg)](https://github.com/corentin-regent/assemblife/actions/workflows/cicd.yml)
 
+![Demo](/docs/demo.webp)
+
 ## Overview
 
 The project targets Linux, is written using the Intel syntax,
