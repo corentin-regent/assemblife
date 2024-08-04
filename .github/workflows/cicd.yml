@@ -4,7 +4,7 @@ on:
   push:
     branches: main
     paths:
-      - '*.asm'
+      - '**/*.asm'
       - '/Dockerfile'
       - '.github/workflows/cicd.yml'
 
