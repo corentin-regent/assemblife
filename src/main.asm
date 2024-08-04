@@ -130,7 +130,11 @@ mainLoop:
     call drawGrid
     call sleep
     call updateGameState
-    jmp mainLoop
+
+    call areCurrentAndNextGridEqual
+    test al, al
+    jz mainLoop
+
     ret
 
 ; void sleep()

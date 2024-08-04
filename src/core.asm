@@ -142,3 +142,29 @@ countNeighbors:
 .stitchToFirstCol:
     xor r9, r9
     jmp .checkNeighbor
+
+; char areCurrentAndNextGridEqual()
+; Returns:
+;   al: Whether the state of the game now remains the same after each iteration
+areCurrentAndNextGridEqual:
+    xor rax, rax                           ; the cell index (starts at 0)
+    mov rcx, [current_grid]
+    mov rdx, [next_grid]
+.checkLoop:
+    mov r8b, [rcx]
+    cmp r8b, [rdx]
+    jne .false
+
+    inc rax
+    inc rcx
+    inc rdx
+    cmp rax, [grid_size]
+    jne .checkLoop
+
+    ; true
+    mov al, 1
+    ret
+
+.false:
+    xor al, al
+    ret
