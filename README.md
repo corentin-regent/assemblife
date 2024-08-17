@@ -3,7 +3,7 @@ Conway's Game of Life in x86-64 Assembly
 
 [![CI/CD](https://github.com/corentin-regent/assemblife/actions/workflows/cicd.yml/badge.svg)](https://github.com/corentin-regent/assemblife/actions/workflows/cicd.yml)
 
-![Demo](/docs/demo.webp)
+<video src="https://youtu.be/t_Kw0YFj-2Q"></video>
 
 ## Overview
 
