@@ -5,7 +5,7 @@ on:
     branches: main
     paths:
       - '**/*.asm'
-      - '/Dockerfile'
+      - 'Dockerfile'
       - '.github/workflows/cicd.yml'
 
 env:
