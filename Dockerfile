@@ -8,7 +8,7 @@ COPY . .
 
 RUN make main
 
-FROM alpine
+FROM scratch
 
 COPY --from=builder /app/main /app/main
 
